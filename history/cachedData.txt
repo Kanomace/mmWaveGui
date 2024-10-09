@@ -1,0 +1,3 @@
+IWR1843
+SDK Out of Box Demo
+C:/Users/Kano/Desktop/radar_toolbox_1_30_01_03/tools/visualizers/Industrial_Visualizer/xwr18xx_profile_2023_12_18T13_32_44_644.cfg

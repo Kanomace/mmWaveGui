@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/mmWave.iml" filepath="$PROJECT_DIR$/.idea/mmWave.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Industrial_Visualizer.iml" filepath="$PROJECT_DIR$/.idea/Industrial_Visualizer.iml" />
     </modules>
   </component>
 </project>

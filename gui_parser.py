@@ -7,10 +7,17 @@ import time
 import numpy as np
 import math
 import datetime
+import pandas as pd
 
 # Local Imports
 from parseFrame import *
 
+
+def write_output_data(file_path, parsed_data):
+    # 写入输出文件
+    with open(file_path, 'w') as file:
+        # 将解析结果写入文件
+        file.write(str(parsed_data))
 #Initialize this Class to create a UART Parser. Initialization takes one argument:
 # 1: String Lab_Type - These can be:
 #   a. 3D People Tracking
@@ -29,7 +36,7 @@ class uartParser():
         self.replay = 0
         self.binData = bytearray(0)
         self.uartCounter = 0
-        self.framesPerFile = 100
+        self.framesPerFile = 3
         self.first_file = True
         self.filepath = datetime.datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
             
@@ -147,15 +154,24 @@ class uartParser():
                 bfile = open(fileName, 'wb')
                 bfile.write(toSave)
                 bfile.close()
+
+                if (self.parserType == "DoubleCOMPort"):
+                    outputDict1 = parseStandardFrame(frameData)
+                fileName1 = 'binData/' + self.filepath + '/pHistBytes_' + str(math.floor(self.uartCounter / self.framesPerFile)) + '.xlsx'
+                point_cloud_data = outputDict1["pointCloud"]
+                # 创建一个DataFrame对象来存储点云数据
+                df = pd.DataFrame(point_cloud_data, columns=['X', 'Y', 'Z', 'Doppler', 'SNR', 'Noise', 'Track index'])
+                df.to_excel(fileName1, index=False)
+
                 # Reset binData and missed frames
                 self.binData = []
- 
+
         # frameData now contains an entire frame, send it to parser
         if (self.parserType == "DoubleCOMPort"):
             outputDict = parseStandardFrame(frameData)
         else:
             print ('FAILURE: Bad parserType')
-        
+
         return outputDict
 
     # This function is identical to the readAndParseUartDoubleCOMPort function, but it's modified to work for SingleCOMPort devices in the xWRLx432 family
