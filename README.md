@@ -56,12 +56,12 @@ RoPEHAR is a **millimeter-wave radar based human activity recognition (HAR) syst
 ```bash
 mmWave-RoPEHAR/
 ├── binData/                    # Dataset
-│   ├── traindata/              # Training data (10 action classes)
+│   ├── processed/              # Training data (10 action classes)
 │   │   ├── 0static/
 │   │   ├── 1squat/
 │   │   ├── 2stand/
 │   │   └── ...
-│   └── processed_data/        # Preprocessed voxel data
+│   └── origin/                # Origin point cloud data
 ├── fig/                       # Figures and visualizations
 ├── gui/                       # GUI application
 ├── rope_informer/             # Core model implementation
