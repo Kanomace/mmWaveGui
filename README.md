@@ -66,7 +66,6 @@ mmWave-RoPEHAR/
 ├── gui/                       # GUI application
 ├── rope_informer/             # Core model implementation
 ├── model_checkpoint/          # Saved model weights
-├── main.py                    # Main entry point for training / evaluation pipeline
 ├── train_gpu.sh               # Shell script for GPU-based training
 ├── train.py                   # Model training script
 ├── predict.py                 # Inference / prediction script
@@ -155,17 +154,6 @@ The complete preprocessing, training, and inference pipeline is provided in this
 
 The dataset is publicly available in this repository for research and verification purposes.
 Upon final acceptance of the corresponding journal paper, a stable and citable version of the dataset will be archived on Zenodo or IEEE DataPort, together with a detailed data card describing the collection protocol, radar configuration, and usage guidelines.
-
----
-
-## Citation
-
-@article{huang2025ropehar,
-  title={RoPEHAR: A Real-Time Rotary Position Encoding Informer for mmWave-Based Human Activity Recognition in Substations},
-  author={Huang, Jiacheng and Liao, Honglin and Yin, Cunyi and Jiang, Hao and Chen, Jing and Huang, Zhaoke and Chen, Zhiwen},
-  journal={IEEE Internet of Things Journal},
-  year={2025}
-}
 
 ---
 

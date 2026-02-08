@@ -1,0 +1,3 @@
+informer_Classification_ftM_sl3750_ll48_pl24_dm8_nh4_el2_dl1_df2048_atprob_fc5_ebtimeF_dtTrue_mxTrue_test_0  
+accuracy:0.5833333333333334
+
