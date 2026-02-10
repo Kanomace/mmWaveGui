@@ -1,0 +1,26 @@
+# ===== Core numeric / data IO =====
+numpy>=1.23
+pandas>=1.5
+openpyxl>=3.1
+scipy>=1.9
+
+# ===== Serial / UART =====
+pyserial>=3.5
+
+# ===== Visualization (Tkinter + Matplotlib) =====
+matplotlib>=3.6
+Pillow>=9.5
+
+# ===== OpenCV (camera display / image ops) =====
+opencv-python>=4.7
+
+# ===== Optional: Intel RealSense D435i =====
+pyrealsense2>=2.50
+
+# ===== Optional: MediaPipe Pose (Tasks API) =====
+mediapipe>=0.10
+
+# ===== Optional: PyQt GUI modules (if you run the PyQt-based tools) =====
+PyQt5>=5.15
+pyqtgraph>=0.13
+PyOpenGL>=3.1

@@ -1,4 +1,3 @@
-
 import sys
 import os
 
@@ -17,7 +16,7 @@ sys.path.append(os.path.dirname(model_path))
 
 print("Environment setup completed")
 
-# 导入必要的库
+# Import required libraries
 import numpy as np
 import pandas as pd
 import torch
@@ -29,11 +28,9 @@ from sklearn.model_selection import train_test_split
 import argparse
 import matplotlib.pyplot as plt
 
-
-
 print("Library import completed")
 
-# Definition of Data Path and Category Mapping
+# Definition of Data Paths and Category Mapping
 data_paths = {
     "stationary": {
         "xoz": "/home/jiacheng008/Py_mmWave_Roformer/Dataset/stationary/pHistBytes_clustered_voxel/pHistBytes_clustered_voxel_XOZ",
@@ -57,7 +54,7 @@ data_paths = {
     }
 }
 
-# Behavior Category Mapping
+# Behavior category mapping
 behavior_mapping = {
     "stationary": 0,
     "run": 1,
@@ -66,16 +63,16 @@ behavior_mapping = {
     "walk": 4
 }
 
-# Definition of Image Size
+# Definition of image sizes
 image_sizes = {
     "xoz": (25, 25),
     "yoz": (25, 15)
 }
 
-print("数据路径和类别定义完成")
+print("Data paths and category definitions completed")
 
 
-# Custom Dataset Class (Supporting Sliding Window)
+# Custom dataset class (with sliding window support)
 class BehaviorDataset(Dataset):
     def __init__(self, data_paths, window_size=3, seq_len=15000, is_train=True):
         self.window_size = window_size
@@ -83,13 +80,12 @@ class BehaviorDataset(Dataset):
         self.data = []
         self.labels = []
 
-
-        print("开始收集数据...")
+        print("Start collecting data...")
         for behavior, paths in data_paths.items():
             label = behavior_mapping[behavior]
-            print(f"处理行为: {behavior} (标签: {label})")
+            print(f"Processing behavior: {behavior} (label: {label})")
 
-            # Handling the XOZ perspective
+            # Handle the XOZ view
             xoz_path = paths["xoz"]
             if os.path.exists(xoz_path):
                 xoz_images = []
@@ -97,12 +93,12 @@ class BehaviorDataset(Dataset):
                     if img_name.endswith(('.png', '.jpg', '.jpeg')):
                         xoz_images.append(os.path.join(xoz_path, img_name))
 
-                # Create sliding window samples for the XOZ perspective
+                # Create sliding-window samples for the XOZ view
                 for i in range(len(xoz_images) - window_size + 1):
                     self.data.append((xoz_images[i:i + window_size], label, "xoz"))
-                print(f"  XOZ视角: 添加了 {len(xoz_images) - window_size + 1} 个样本")
+                print(f"  XOZ view: added {len(xoz_images) - window_size + 1} samples")
 
-            # Handling the YOZ perspective
+            # Handle the YOZ view
             yoz_path = paths["yoz"]
             if os.path.exists(yoz_path):
                 yoz_images = []
@@ -110,27 +106,27 @@ class BehaviorDataset(Dataset):
                     if img_name.endswith(('.png', '.jpg', '.jpeg')):
                         yoz_images.append(os.path.join(yoz_path, img_name))
 
-                # Create sliding window samples for the YOZ perspective
+                # Create sliding-window samples for the YOZ view
                 for i in range(len(yoz_images) - window_size + 1):
                     self.data.append((yoz_images[i:i + window_size], label, "yoz"))
-                print(f"  YOZ视角: 添加了 {len(yoz_images) - window_size + 1} 个样本")
+                print(f"  YOZ view: added {len(yoz_images) - window_size + 1} samples")
 
-        print(f"总共收集到 {len(self.data)} 个样本")
+        print(f"Collected {len(self.data)} samples in total")
 
         if len(self.data) == 0:
-            print("警告: 没有找到任何数据样本!")
+            print("Warning: no data samples were found!")
             return
 
-        # Divide the training set and the test set
+        # Split into training and testing sets
         try:
             train_data, test_data = train_test_split(
                 self.data, test_size=0.2, random_state=42, stratify=[d[1] for d in self.data]
             )
 
             self.data = train_data if is_train else test_data
-            print(f"{'训练' if is_train else '测试'}集大小: {len(self.data)}")
+            print(f"{'Training' if is_train else 'Test'} set size: {len(self.data)}")
         except Exception as e:
-            print(f"划分数据集时出错: {e}")
+            print(f"Error while splitting the dataset: {e}")
 
             train_data, test_data = train_test_split(
                 self.data, test_size=0.2, random_state=42
@@ -144,7 +140,7 @@ class BehaviorDataset(Dataset):
         img_paths, label, view = self.data[idx]
         window_images = []
 
-        # 加载窗口内的所有图像
+        # Load all images within the window
         for img_path in img_paths:
             img = Image.open(img_path).convert('L')
 
@@ -156,39 +152,42 @@ class BehaviorDataset(Dataset):
             img_array = np.array(img).flatten()
             window_images.append(img_array)
 
-        # Combine all the images within the window into a sequence
+        # Combine all images in the window into a single sequence
         sequence = np.concatenate(window_images)
 
         if len(sequence) < self.seq_len:
             pad_width = self.seq_len - len(sequence)
             sequence = np.pad(sequence, (0, pad_width), mode='constant')
-
         elif len(sequence) > self.seq_len:
             sequence = sequence[:self.seq_len]
 
         return torch.FloatTensor(sequence), torch.tensor(label, dtype=torch.long)
 
 
-print("自定义数据集类定义完成")
+print("Custom dataset class definition completed")
 
-# Create data loader
-# Calculate sequence length: Each sample consists of 3 frames, and the flattened length of each frame image # XOZ: 25*25 = 625, YOZ: 25*15 = 375
-# Total sequence length = 3 * (625 + 375) = 300
+# Create data loaders
+# Sequence length calculation:
+# Each sample has 3 frames.
+# Flattened length per frame:
+#   XOZ: 25*25 = 625
+#   YOZ: 25*15 = 375
+# Total sequence length = 3 * (625 + 375) = 3000
 seq_len = 3000
 
-print("创建训练数据集...")
+print("Creating training dataset...")
 train_dataset = BehaviorDataset(data_paths, window_size=3, seq_len=seq_len, is_train=True)
-print("创建测试数据集...")
+print("Creating test dataset...")
 test_dataset = BehaviorDataset(data_paths, window_size=3, seq_len=seq_len, is_train=False)
 
 train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False)
 
-print(f"训练集大小: {len(train_dataset)}")
-print(f"测试集大小: {len(test_dataset)}")
-print("数据加载器创建完成")
+print(f"Training set size: {len(train_dataset)}")
+print(f"Test set size: {len(test_dataset)}")
+print("Data loaders created successfully")
 
-# Parameter Settings
+# Parameter settings
 class Args:
     def __init__(self):
         self.model = 'informer'
@@ -199,7 +198,7 @@ class Args:
         self.d_ff = 256
         self.train_epochs = 20
         self.batch_size = 8
-        self.seq_len = seq_len  # 使用计算得到的序列长度
+        self.seq_len = seq_len  # Use the computed sequence length
         self.output_path = output_path
         self.checkpoints = checkpoints
         self.test_ratio = 0.2
@@ -211,7 +210,7 @@ class Args:
         self.label_len = 48
         self.pred_len = 24
         self.dec_in = 1
-        self.c_out = 5  # 5种行为分类
+        self.c_out = 5  # 5 behavior classes
         self.e_layers = 2
         self.d_layers = 1
         self.s_layers = '3,2,1'
@@ -249,14 +248,13 @@ print(f"Do you use a GPU?: {args.use_gpu}")
 # Import the model and set up the experiment
 try:
     from rope_informer import Exp_Informer
-
-    print("成功导入 rope_informer")
+    print("Successfully imported rope_informer")
 except ImportError as e:
-    print(f"导入 rope_informer 失败: {e}")
+    print(f"Failed to import rope_informer: {e}")
     sys.exit(1)
 
 
-# Modify the Exp_Informer class to use the new data loader
+# Modify the Exp_Informer class to use the new data loaders
 class CustomExp_Informer(Exp_Informer):
     def _get_data(self, flag):
         if flag == 'test':
@@ -281,7 +279,7 @@ exp.train(setting)
 
 print("Model training completed")
 
-# 模型测试
+# Model testing
 print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
 exp.test(setting)
 
@@ -289,21 +287,20 @@ torch.cuda.empty_cache()
 
 print("Model testing completed")
 
-# results visualization
+# Results visualization
 try:
     truth = np.load(os.path.join(args.output_path, setting, "true.npy"))
     preds = np.load(os.path.join(args.output_path, setting, "pred.npy"))
 
-
-    # Calculate the total number of each category and the number of correct predictions
+    # Compute the total count per class and the count of correct predictions per class
     bin_counts = np.bincount(truth, minlength=5)
     correct_counts = np.bincount(truth[preds == truth], minlength=5)
 
-    # Calculate the accuracy rate
+    # Compute overall accuracy
     accuracy = np.sum(preds == truth) / len(truth)
     print(f"Overall accuracy rate: {accuracy:.4f}")
 
-    # Draw a histogram
+    # Plot histogram
     categories = ['stationary', 'run', 'squat', 'stand', 'walk']
     plt.figure(figsize=(10, 6))
     plt.bar(categories, bin_counts, width=0.5, align='center', alpha=0.8, label='truth', color='purple')
@@ -315,6 +312,6 @@ try:
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig('/home/jiacheng008/Py_mmWave_Roformer/behavior_classification_results_window.png')
-    print("The result visualization has been completed and saved as an image.")
+    print("Result visualization completed and saved as an image.")
 except Exception as e:
-    print(f"The result visualization failed.: {e}")
+    print(f"Result visualization failed: {e}")

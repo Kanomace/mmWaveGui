@@ -3,10 +3,10 @@ import os
 import matplotlib.pyplot as plt
 import re
 
-# 设置体素文件夹路径
+# Set the voxel folder path
 voxel_folder = r'D:\Ti\Py_mmWave_Roformer\Dataset\stationary.test\pHistBytes_clustered_voxel'
 
-# 创建保存路径文件夹
+# Create output directories
 save_path_YOZ = os.path.join(voxel_folder, 'pHistBytes_clustered_voxel_YOZ')
 save_path_XOY = os.path.join(voxel_folder, 'pHistBytes_clustered_voxel_XOY')
 save_path_XOZ = os.path.join(voxel_folder, 'pHistBytes_clustered_voxel_XOZ')
@@ -16,44 +16,44 @@ os.makedirs(save_path_XOY, exist_ok=True)
 os.makedirs(save_path_XOZ, exist_ok=True)
 
 
-# 获取所有.npy文件并按数字顺序排序
+# Extract numeric index from filename
 def extract_number(filename):
-    # 从文件名中提取数字部分
+    # Extract the numeric part from the filename
     match = re.search(r'pHistBytes_(\d+)\.npy', filename)
     if match:
         return int(match.group(1))
     return 0
 
 
-# 获取并排序文件
+# Get all .npy files and sort them numerically
 npy_files = [f for f in os.listdir(voxel_folder) if f.endswith('.npy')]
-npy_files.sort(key=extract_number)  # 按数字顺序排序
+npy_files.sort(key=extract_number)
 
 print(f"Found {len(npy_files)} .npy files, processing in order...")
 
-# 按顺序处理每个文件
+# Process each file sequentially
 for file_name in npy_files:
     try:
-        # 读取体素文件
+        # Load voxel file
         file_path = os.path.join(voxel_folder, file_name)
         voxel_data = np.load(file_path)
 
-        # 提取XOY平面
+        # Extract the XOY plane
         xoyslice = np.max(voxel_data, axis=2)
         xoyslice = np.rot90(xoyslice)
-        xoyslice = np.where(xoyslice > 0, 1, 0)  # 将体素区域设为白色，空白区域设为黑色
+        xoyslice = np.where(xoyslice > 0, 1, 0)  # Set occupied voxels to white, empty space to black
 
-        # 提取XOZ平面
+        # Extract the XOZ plane
         xozslice = np.max(voxel_data, axis=1)
         xozslice = np.rot90(xozslice)
-        xozslice = np.where(xozslice > 0, 1, 0)  # 将体素区域设为白色，空白区域设为黑色
+        xozslice = np.where(xozslice > 0, 1, 0)  # Set occupied voxels to white, empty space to black
 
-        # 提取YOZ平面
+        # Extract the YOZ plane
         yozslice = np.max(voxel_data, axis=0)
         yozslice = np.rot90(yozslice)
-        yozslice = np.where(yozslice > 0, 1, 0)  # 将体素区域设为白色，空白区域设为黑色
+        yozslice = np.where(yozslice > 0, 1, 0)  # Set occupied voxels to white, empty space to black
 
-        # 保存为图像文件
+        # Save slices as image files
         base_name = os.path.splitext(file_name)[0]
         save_file_name_YOZ = os.path.join(save_path_YOZ, base_name + '_YOZ.png')
         save_file_name_XOY = os.path.join(save_path_XOY, base_name + '_XOY.png')
@@ -63,7 +63,7 @@ for file_name in npy_files:
         plt.imsave(save_file_name_XOY, xoyslice, cmap='gray')
         plt.imsave(save_file_name_XOZ, xozslice, cmap='gray')
 
-        # 显示处理进度
+        # Display processing progress
         frame_num = extract_number(file_name)
         print(f'Processed frame {frame_num}/{len(npy_files)}: {file_name}')
 

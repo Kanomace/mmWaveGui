@@ -2,56 +2,60 @@ import os
 from PIL import Image
 from openpyxl import Workbook
 
-# 文件夹路径
+# Base folder path
 base_folder_path = r'C:\Users\Kano\Desktop\radar_toolbox_1_30_01_03\tools\visualizers\Industrial_Visualizer\binData\traindata\9sign'
 
-# 文件夹数量
+# Number of subfolders
 folder_count = 50
 
-# 文件夹后缀列表
-folder_suffixes = ['pHistBytes_clustered_voxel_XOY', 'pHistBytes_clustered_voxel_XOZ', 'pHistBytes_clustered_voxel_YOZ']
+# List of subfolder suffixes
+folder_suffixes = [
+    'pHistBytes_clustered_voxel_XOY',
+    'pHistBytes_clustered_voxel_XOZ',
+    'pHistBytes_clustered_voxel_YOZ'
+]
 
-# 遍历文件夹
+# Iterate through folders
 for i in range(1, folder_count + 1):
     folder_path = os.path.join(base_folder_path, str(i))
 
-    # 遍历文件夹后缀
+    # Iterate through subfolder suffixes
     for suffix in folder_suffixes:
-        # 文件夹完整路径
+        # Full subfolder path
         full_folder_path = os.path.join(folder_path, suffix)
 
-        # 获取文件夹中的图像文件列表
+        # Get list of image files in the folder
         image_files = [f for f in os.listdir(full_folder_path) if f.endswith('.png')]
-        # 图像文件排序
+        # Sort image files
         image_files.sort(key=lambda x: int(x.split('_')[-2]))
 
-        # 创建Excel工作簿
+        # Create an Excel workbook
         workbook = Workbook()
         sheet = workbook.active
 
-        # 创建表头
+        # Initialize header and pixel value list
         header = []
         pixel_values_combined = []
 
-        # 遍历图像文件并将数据写入表头和像素值列表
+        # Iterate through image files and write data to header and pixel list
         for j, image_file in enumerate(image_files):
             image_path = os.path.join(full_folder_path, image_file)
-            image = Image.open(image_path).convert('L')  # 打开并转换为灰度图像
+            image = Image.open(image_path).convert('L')  # Open and convert image to grayscale
             pixel_values = list(image.getdata())
 
-            # 在第一个图像时调整表头为图像的像素数量
+            # Initialize header based on the number of pixels in the first image
             if j == 0:
                 header = ['pixel' + str(k + 1) for k in range(len(pixel_values))]
 
-            # 将当前图像的像素值添加到像素值列表
+            # Append pixel values of the current image
             pixel_values_combined.extend(pixel_values)
 
-        # 将表头和像素值列表写入Excel文件
+        # Write header and pixel values to the Excel file
         sheet.append(header)
         sheet.append(pixel_values_combined)
 
-        # 保存Excel文件
+        # Save the Excel file
         excel_file_path = os.path.join(full_folder_path, 'image_data.xlsx')
         workbook.save(excel_file_path)
 
-        print('Excel文件已保存：', excel_file_path)
+        print('Excel file has been saved:', excel_file_path)

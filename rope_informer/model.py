@@ -6,7 +6,7 @@ import pandas as pd
 import os
 
 
-# 定义CNN+LSTM模型
+# Define the CNN + LSTM model
 class CNNLSTM(nn.Module):
     def __init__(self, input_dim, hidden_dim, num_classes):
         super(CNNLSTM, self).__init__()
@@ -23,61 +23,61 @@ class CNNLSTM(nn.Module):
 
     def forward(self, x):
         x = self.cnn(x)
-        x = x.permute(0, 2, 1)  # 调换维度顺序，以适应LSTM的输入
+        x = x.permute(0, 2, 1)  # Permute dimensions to match LSTM input format
         _, (h, _) = self.lstm(x)
         h = h.squeeze(0)
         out = self.fc(h)
         return out
 
 
-# 数据文件夹路径
+# Path to the data folder
 folder_path = r'C:\Users\Kano\Desktop\radar_toolbox_1_30_01_03\tools\visualizers\Industrial_Visualizer\binData\trainData'
 
-# 读取数据并分配标签
+# Load data and assign labels
 data = []
 labels = []
 
-# 遍历文件夹
+# Traverse the folder
 for root, dirs, files in os.walk(folder_path):
     for file in files:
         if file.endswith(".xlsx"):
             file_path = os.path.join(root, file)
             label = os.path.basename(os.path.dirname(file_path))
 
-            # 读取Excel文件
+            # Read the Excel file
             df = pd.read_excel(file_path)
 
-            # 将数据添加到列表中
+            # Append data to the list
             data.append(df.values)
             labels.append(label)
 
-# 将数据和标签转换为NumPy数组
+# Convert data and labels to NumPy arrays
 data = np.array(data)
 labels = np.array(labels)
 
-# 数据预处理
-X = np.transpose(data, (0, 2, 1))  # 调换维度顺序，以适应CNN的输入
+# Data preprocessing
+X = np.transpose(data, (0, 2, 1))  # Permute dimensions to match CNN input format
 y = labels.reshape(-1, 1)
 X = torch.from_numpy(X).float()
 y = torch.from_numpy(y).long()
 
-# 划分训练集和验证集（可以根据需要进行修改）
+# Split the dataset into training and validation sets (can be adjusted as needed)
 train_ratio = 0.8
 train_size = int(train_ratio * len(X))
 train_X, val_X = X[:train_size], X[train_size:]
 train_y, val_y = y[:train_size], y[train_size:]
 
-# 创建模型实例
+# Create model instance
 input_dim = X.shape[2]
 hidden_dim = 64
 num_classes = len(np.unique(y))
 model = CNNLSTM(input_dim, hidden_dim, num_classes)
 
-# 定义损失函数和优化器
+# Define loss function and optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-# 训练模型
+# Train the model
 num_epochs = 10
 batch_size = 32
 
@@ -106,7 +106,7 @@ for epoch in range(num_epochs):
     train_accuracy = 100 * train_correct / train_total
     train_loss /= len(train_X)
 
-    # 在验证集上评估模型
+    # Evaluate the model on the validation set
     model.eval()
     val_loss = 0.0
     val_correct = 0
@@ -129,4 +129,7 @@ for epoch in range(num_epochs):
     val_loss /= len(val_X)
 
     print(
-        f"Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.2f}%, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.2f}%")
+        f"Epoch [{epoch + 1}/{num_epochs}], "
+        f"Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.2f}%, "
+        f"Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.2f}%"
+    )
