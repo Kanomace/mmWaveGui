@@ -56,21 +56,18 @@ RoPEHAR is a **millimeter-wave radar based human activity recognition (HAR) syst
 ```bash
 mmWave-RoPEHAR/
 ├── binData/                    # Dataset
-│   ├── processed/              # Training data (10 action classes)
-│   │   ├── 0static/
-│   │   ├── 1squat/
-│   │   ├── 2stand/
-│   │   └── ...
-│   └── origin/                # Origin point cloud data
+│   └── origin/                 # Origin point cloud data
+│       ├── 0static/
+│       ├── 1squat/
+│       ├── 2stand/
+│       └── ...
 ├── fig/                       # Figures and visualizations
 ├── gui/                       # GUI application
 ├── rope_informer/             # Core model implementation
 ├── model_checkpoint/          # Saved model weights
 ├── train_gpu.sh               # Shell script for GPU-based training
-├── train.py                   # Model training script
 ├── predict.py                 # Inference / prediction script
 ├── PreDataset.py              # Dataset loader and preprocessing logic (Python)
-├── Voxel.py                   # Point cloud voxelization and projection utilities
 ├── RoPEHAR.py                 # RoPEHAR model definition (Roformer + RoPE)
 ├── RoPEHAR.ipynb              # Jupyter notebook for exploratory experiments
 ├── results/                   # Experiment outputs
