@@ -1,6 +1,6 @@
 # RoPEHAR: A Real-Time Rotary Position Encoding Informer for mmWave-Based Human Activity Recognition in Substations
 
-This repository provides the **official implementation, dataset, and GUI demo** for the paper:
+This repository provides the **official implementation, dataset, and data acquisition GUI** for the paper:
 
 > **RoPEHAR: A Real-Time Rotary Position Encoding Informer for mmWave-Based Human Activity Recognition in Substations**  
 > *IEEE Internet of Things Journal (under revision)*
@@ -29,7 +29,7 @@ RoPEHAR is a **millimeter-wave radar based human activity recognition (HAR) syst
 **Processing pipeline:**
 
 1. Raw FMCW radar signals → TLV packets  
-2. SNR-based filtering and DBSCAN clustering  
+2. Multilayer SNR-based filtering and weighted DBSCAN clustering  
 3. Point cloud projection and voxelization  
 4. Roformer-based spatiotemporal modeling  
 5. Real-time activity classification  
