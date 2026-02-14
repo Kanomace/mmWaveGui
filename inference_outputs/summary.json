@@ -1,7 +1,7 @@
 {
   "samples": 340,
   "has_labels": true,
-  "accuracy": 0.4852941176470588,
+  "accuracy": 0.9552941176470588,
   "elapsed_sec": 6.016956806182861,
   "classes": {
     "0": "stationary",
