@@ -16,7 +16,7 @@ RoPEHAR is a **millimeter-wave radar based human activity recognition (HAR) syst
 - 🧹 Hybrid SNR–DBSCAN denoising for EMI-robust point cloud extraction
 - ⚡ Real-time and lightweight inference pipeline
 - 🗂 Public dataset and reproducible processing pipeline
-- 🖥 GUI-based visualization and inference demo
+- 🖥 GUI-based visualization and data collection demo
 
 ---
 
